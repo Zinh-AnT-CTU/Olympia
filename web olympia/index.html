@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Luyện thi Đường lên đỉnh Olympia - Ứng dụng luyện tập với câu hỏi từ AI, tính thời gian, chấm điểm tự động. Chuẩn bị cho cuộc thi VTV.">
+    <title>Đường Lên Đỉnh Olympia - Luyện Thi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Particle Background -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ============== GATEKEEPER SCREEN ============== -->
+    <div id="gatekeeperScreen" class="gatekeeper-screen">
+        <div class="gatekeeper-container">
+            <div class="gatekeeper-emoji-bg">🤔</div>
+            <div class="gatekeeper-card glass-card">
+                <div class="gatekeeper-sparkles">
+                    <span class="sparkle s1">✨</span>
+                    <span class="sparkle s2">🌟</span>
+                    <span class="sparkle s3">💫</span>
+                    <span class="sparkle s4">⭐</span>
+                </div>
+                <div class="gatekeeper-header">
+                    <div class="gatekeeper-icon bounce-in">🔐</div>
+                    <h1 class="gatekeeper-title">CÂU HỎI BẢO MẬT</h1>
+                    <p class="gatekeeper-subtitle">Trả lời đúng để mở khóa chương trình! 🎯</p>
+                </div>
+                <div class="gatekeeper-question">
+                    <div class="gatekeeper-q-icon">❓</div>
+                    <h2 class="gatekeeper-q-text">Vĩnh An có đẹp trai không?</h2>
+                </div>
+                <div class="gatekeeper-options">
+                    <button class="gatekeeper-btn gatekeeper-correct" id="gatekeeperYes" type="button">
+                        <span class="gatekeeper-btn-emoji">😍</span>
+                        <span class="gatekeeper-btn-text">CÓ</span>
+                        <span class="gatekeeper-btn-desc">Đương nhiên rồi!</span>
+                    </button>
+                    <button class="gatekeeper-btn gatekeeper-wrong" id="gatekeeperNo" type="button">
+                        <span class="gatekeeper-btn-emoji">🤨</span>
+                        <span class="gatekeeper-btn-text">KHÔNG</span>
+                        <span class="gatekeeper-btn-desc">Hmm...</span>
+                    </button>
+                </div>
+                <div class="gatekeeper-feedback hidden" id="gatekeeperFeedback">
+                    <div class="gatekeeper-fb-icon" id="gatekeeperFbIcon">✅</div>
+                    <div class="gatekeeper-fb-text" id="gatekeeperFbText">Chính xác!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app-hidden">
+        <!-- Header -->
+        <header id="mainHeader">
+            <div class="header-content">
+                <div class="logo" id="logoBtn">
+                    <div class="logo-icon">🏔️</div>
+                    <div class="logo-text">
+                        <span class="logo-title">ĐƯỜNG LÊN ĐỈNH</span>
+                        <span class="logo-subtitle">OLYMPIA</span>
+                    </div>
+                </div>
+                <nav class="header-nav">
+                    <div class="score-display" id="headerScore">
+                        <span class="score-label">Tổng điểm</span>
+                        <span class="score-value" id="totalScore">0</span>
+                    </div>
+                    <div class="streak-display" id="headerStreak">
+                        <span class="streak-icon">🔥</span>
+                        <span class="streak-value" id="streakCount">0</span>
+                    </div>
+                    <button class="btn-icon reset-btn" id="headerResetBtn" title="Đặt lại điểm số">🔄</button>
+                    <button class="btn-icon settings-btn" id="settingsBtn" title="Cài đặt">⚙️</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Home Screen -->
+        <section id="homeScreen" class="screen active">
+            <div class="hero-section">
+                <div class="hero-mountain">
+                    <svg viewBox="0 0 800 300" class="mountain-svg">
+                        <defs>
+                            <linearGradient id="mountainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#feca57;stop-opacity:0.4" />
+                            </linearGradient>
+                            <linearGradient id="snowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+                                <stop offset="100%" style="stop-color:#dfe6e9;stop-opacity:0.3" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="400,30 550,200 650,160 800,300 0,300 150,180 250,220" fill="url(#mountainGrad)" />
+                        <polygon points="400,30 430,80 450,60 470,90 440,100 460,110 420,120 380,110 360,100 350,90 370,60 390,80" fill="url(#snowGrad)" />
+                        <polygon points="650,160 670,190 680,180 690,200 675,205 660,195" fill="url(#snowGrad)" />
+                    </svg>
+                </div>
+                <h1 class="hero-title">
+                    <span class="hero-line1">ĐƯỜNG LÊN ĐỈNH</span>
+                    <span class="hero-line2">OLYMPIA</span>
+                </h1>
+                <p class="hero-desc">Luyện tập cùng trí tuệ nhân tạo — Sẵn sàng chinh phục đỉnh cao tri thức 🚀</p>
+                <div class="hero-badges-row">
+                    <div class="hero-pill-badge" id="bankProgressBadge">
+                        <span class="badge-emoji">📚</span>
+                        <span>Ngân hàng câu hỏi: <strong id="homeBankCount">0/120</strong> câu (Xoay vòng khi reset)</span>
+                    </div>
+                    <div class="hero-pill-badge" id="cnvProgressBadge">
+                        <span class="badge-emoji">🧩</span>
+                        <span>Chướng ngại vật: <strong id="homeCnvCount">0/10</strong> bộ ảnh</span>
+                    </div>
+                    <div class="hero-pill-badge" id="apiStatusPill">
+                        <span class="badge-emoji">⚡</span>
+                        <span id="homeApiStatusText">AI: Gemini Multi-Model Active (3 Cổng API)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounds-grid">
+                <!-- Khởi Động -->
+                <div class="round-card" data-round="khoidong" id="roundKhoiDong">
+                    <div class="round-card-bg"></div>
+                    <div class="round-icon">⚡</div>
+                    <div class="round-info">
+                        <h3>Khởi Động</h3>
+                        <p>Trả lời nhanh 12 câu hỏi trong vòng 60 giây. Mỗi câu trả lời đúng được 10 điểm.</p>
+                        <div class="round-meta">
+                            <span>⏱️ 60 giây</span>
+                            <span>📝 12 câu</span>
+                            <span>⭐ 10đ/câu</span>
+                        </div>
+                    </div>
+                    <div class="round-action">
+                        <button class="btn btn-round">Bắt đầu</button>
+                    </div>
+                </div>
+
+                <!-- Vượt Chướng Ngại Vật -->
+                <div class="round-card" data-round="chuongnvaivat" id="roundCNV">
+                    <div class="round-card-bg"></div>
+                    <div class="round-icon">🧩</div>
+                    <div class="round-info">
+                        <h3>Vượt Chướng Ngại Vật</h3>
+                        <p>Giải 4 hàng ngang và ô trung tâm để lật mở hình ảnh bí mật. Bấm chuông đoán từ khóa giành 60→20 điểm!</p>
+                        <div class="round-meta">
+                            <span>⏱️ 15s/hàng</span>
+                            <span>🖼️ 4 hàng + TT</span>
+                            <span>⭐ 10đ/hàng</span>
+                        </div>
+                    </div>
+                    <div class="round-action">
+                        <button class="btn btn-round">Bắt đầu</button>
+                    </div>
+                </div>
+
+                <!-- Tăng Tốc -->
+                <div class="round-card" data-round="tangtoc" id="roundTangToc">
+                    <div class="round-card-bg"></div>
+                    <div class="round-icon">🚀</div>
+                    <div class="round-info">
+                        <h3>Tăng Tốc</h3>
+                        <p>4 câu hỏi với hình ảnh mô tả. Trả lời nhanh trong 30 giây mỗi câu, 30 điểm/câu.</p>
+                        <div class="round-meta">
+                            <span>⏱️ 30s/câu</span>
+                            <span>📝 4 câu</span>
+                            <span>⭐ 30đ/câu</span>
+                        </div>
+                    </div>
+                    <div class="round-action">
+                        <button class="btn btn-round">Bắt đầu</button>
+                    </div>
+                </div>
+
+                <!-- Về Đích -->
+                <div class="round-card" data-round="vedich" id="roundVeDich">
+                    <div class="round-card-bg"></div>
+                    <div class="round-icon">🏆</div>
+                    <div class="round-info">
+                        <h3>Về Đích</h3>
+                        <p>Gói 3 câu hỏi (10, 20 hoặc 30đ, được chọn trùng mức điểm). Có Ngôi sao hy vọng: đúng x2, sai trừ điểm!</p>
+                        <div class="round-meta">
+                            <span>⏱️ 30s/câu</span>
+                            <span>⭐ Ngôi sao hy vọng</span>
+                            <span>🎯 3 câu tự chọn</span>
+                        </div>
+                    </div>
+                    <div class="round-action">
+                        <button class="btn btn-round">Bắt đầu</button>
+                    </div>
+                </div>
+
+                <!-- Luyện Tập Tự Do -->
+                <div class="round-card wide" data-round="tudo" id="roundTuDo">
+                    <div class="round-card-bg"></div>
+                    <div class="round-icon">📚</div>
+                    <div class="round-info">
+                        <h3>Luyện Tập Tự Do</h3>
+                        <p>Chọn lĩnh vực yêu thích và luyện tập không giới hạn. Thoải mái khám phá kiến thức!</p>
+                        <div class="round-meta">
+                            <span>⏱️ Không giới hạn</span>
+                            <span>📝 Tùy chọn</span>
+                            <span>🎯 Mọi lĩnh vực</span>
+                        </div>
+                    </div>
+                    <div class="round-action">
+                        <button class="btn btn-round">Bắt đầu</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <h2 class="section-title">📊 Thống Kê Của Bạn</h2>
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-value" id="statTotalQuestions">0</div>
+                        <div class="stat-label">Câu đã trả lời</div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="statCorrect">0</div>
+                        <div class="stat-label">Trả lời đúng</div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-value" id="statAccuracy">0%</div>
+                        <div class="stat-label">Tỷ lệ đúng</div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-value" id="statBestStreak">0</div>
+                        <div class="stat-label">Chuỗi dài nhất</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Screen -->
+        <section id="gameScreen" class="screen">
+            <!-- Top Bar -->
+            <div class="game-top-bar">
+                <button class="btn-back" id="backBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>Thoát</span>
+                </button>
+                <div class="game-round-title" id="gameRoundTitle">Khởi Động</div>
+                <div class="game-score" id="gameScore">
+                    <span class="game-score-label">Điểm:</span>
+                    <span class="game-score-value" id="roundScore">0</span>
+                </div>
+            </div>
+
+            <!-- Timer -->
+            <div class="timer-container" id="timerContainer">
+                <svg class="timer-svg" viewBox="0 0 120 120">
+                    <circle class="timer-track" cx="60" cy="60" r="54" />
+                    <circle class="timer-progress" id="timerProgress" cx="60" cy="60" r="54" />
+                </svg>
+                <div class="timer-text" id="timerText">60</div>
+            </div>
+
+            <!-- Question Counter -->
+            <div class="question-counter" id="questionCounter">
+                Câu <span id="currentQ">1</span> / <span id="totalQ">12</span>
+            </div>
+
+            <!-- Question Area -->
+            <div class="question-area glass-card" id="questionArea">
+                <div class="question-category" id="questionCategory">
+                    <span class="category-badge">📘 Toán học</span>
+                </div>
+                <div class="question-text" id="questionText">
+                    Đang tạo câu hỏi...
+                </div>
+                <!-- Hints for CNV round -->
+                <div class="hints-container hidden" id="hintsContainer">
+                    <div class="hint-item locked" id="hint1">
+                        <span class="hint-number">1</span>
+                        <span class="hint-text">Gợi ý sẽ hiện ở đây</span>
+                    </div>
+                    <div class="hint-item locked" id="hint2">
+                        <span class="hint-number">2</span>
+                        <span class="hint-text">???</span>
+                    </div>
+                    <div class="hint-item locked" id="hint3">
+                        <span class="hint-number">3</span>
+                        <span class="hint-text">???</span>
+                    </div>
+                    <div class="hint-item locked" id="hint4">
+                        <span class="hint-number">4</span>
+                        <span class="hint-text">???</span>
+                    </div>
+                </div>
+                <!-- Point Package Selection for VeDich -->
+                <div class="package-selector hidden" id="packageSelector">
+                    <h3 id="packageSelectorTitle">🎯 Chọn mức điểm cho Câu 1/3:</h3>
+                    <p class="package-subtitle">Có thể chọn nhiều câu trong cùng mức điểm (vd 3 câu 30 điểm). Tổng cộng 3 câu.</p>
+                    <div class="package-options">
+                        <button class="package-btn" data-points="10" id="pkg10">
+                            <span class="pkg-points">10</span>
+                            <span class="pkg-label">điểm</span>
+                        </button>
+                        <button class="package-btn" data-points="20" id="pkg20">
+                            <span class="pkg-points">20</span>
+                            <span class="pkg-label">điểm</span>
+                        </button>
+                        <button class="package-btn" data-points="30" id="pkg30">
+                            <span class="pkg-points">30</span>
+                            <span class="pkg-label">điểm</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hope Star (Ngôi Sao Hy Vọng) for VeDich -->
+                <div class="hope-star-container hidden" id="hopeStarContainer">
+                    <button class="btn btn-hope-star pulse" id="hopeStarBtn" type="button">
+                        <span class="star-icon">⭐</span>
+                        <span class="star-text">ĐẶT NGÔI SAO HY VỌNG</span>
+                    </button>
+                    <div class="hope-star-badge hidden" id="hopeStarBadge">
+                        <span class="star-icon-glow">🌟</span>
+                        <span>ĐÃ ĐẶT NGÔI SAO HY VỌNG (+2x đúng / -1x sai)</span>
+                    </div>
+                </div>
+                <!-- Category Selection for TuDo -->
+                <div class="category-selector hidden" id="categorySelector">
+                    <h3>Chọn lĩnh vực:</h3>
+                    <div class="category-options">
+                        <button class="category-btn" data-category="toan">🔢 Toán học</button>
+                        <button class="category-btn" data-category="ly">⚛️ Vật lý</button>
+                        <button class="category-btn" data-category="hoa">🧪 Hóa học</button>
+                        <button class="category-btn" data-category="sinh">🧬 Sinh học</button>
+                        <button class="category-btn" data-category="su">📜 Lịch sử</button>
+                        <button class="category-btn" data-category="dia">🌍 Địa lý</button>
+                        <button class="category-btn" data-category="van">📖 Văn học</button>
+                        <button class="category-btn" data-category="anh">🇬🇧 Tiếng Anh</button>
+                        <button class="category-btn" data-category="tin">💻 Tin học</button>
+                        <button class="category-btn" data-category="tongquat">🎓 Kiến thức tổng quát</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Area -->
+            <div class="answer-area" id="answerArea">
+                <div class="answer-input-group">
+                    <input type="text" id="answerInput" class="answer-input" placeholder="Nhập câu trả lời của bạn..." autocomplete="off" autofocus>
+                    <button class="btn btn-submit btn-glow" id="submitAnswer">
+                        <span>Trả lời</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="answer-shortcut">Nhấn <kbd>Enter</kbd> để trả lời</div>
+            </div>
+
+            <!-- Result Feedback -->
+            <div class="result-feedback hidden" id="resultFeedback">
+                <div class="result-icon" id="resultIcon">✅</div>
+                <div class="result-message" id="resultMessage">Chính xác!</div>
+                <div class="result-answer" id="resultAnswer"></div>
+                <div class="result-explanation" id="resultExplanation"></div>
+                <button class="btn btn-next" id="nextQuestion">
+                    Câu tiếp theo →
+                </button>
+            </div>
+
+            <!-- ===================== Dedicated CNV Arena (VTV Olympia Format) ===================== -->
+            <div id="cnvScreenArea" class="cnv-screen-area hidden">
+                <!-- Top Status Bar -->
+                <div class="cnv-top-status glass-card">
+                    <div class="cnv-info-left">
+                        <div class="cnv-title-tag">
+                            <span class="cnv-badge-icon">🧩</span>
+                            <span class="cnv-badge-text">CHƯỚNG NGẠI VẬT</span>
+                            <span class="cnv-keyword-length-badge" id="cnvLetterCount">GỒM 7 CHỮ CÁI</span>
+                        </div>
+                        <!-- Letter Boxes representing the secret obstacle keyword -->
+                        <div class="cnv-keyword-boxes" id="cnvKeywordBoxes"></div>
+                    </div>
+
+                    <div class="cnv-info-right">
+                        <div class="cnv-buzzer-cta">
+                            <div class="cnv-buzzer-meta">
+                                <span class="buzzer-points-title">Điểm chuông hiện tại:</span>
+                                <span class="buzzer-points-value" id="cnvCurrentBuzzerPoints">60 điểm</span>
+                            </div>
+                            <button class="btn btn-buzzer pulse" id="cnvBuzzerBtn" type="button">
+                                <span class="buzzer-icon">🔔</span>
+                                <span class="buzzer-label">BẤM CHUÔNG TRẢ LỜI CNV</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Grid: Image on Left, Clues & Interactive rows on Right -->
+                <div class="cnv-main-grid">
+                    <!-- Left: Image & 5 Puzzle Pieces -->
+                    <div class="cnv-image-panel glass-card">
+                        <div class="cnv-image-frame" id="cnvImageFrame">
+                            <img id="cnvImage" class="cnv-image" src="" alt="Chướng ngại vật bí ẩn">
+                            <div class="cnv-image-glow-overlay"></div>
+
+                            <!-- 4 Corner Pieces + 1 Center Piece -->
+                            <div class="cnv-piece piece-1" id="cnvPiece1" data-piece="1">
+                                <div class="piece-content">
+                                    <span class="piece-num">1</span>
+                                    <span class="piece-lock">🔒</span>
+                                    <span class="piece-title">Góc 1</span>
+                                </div>
+                            </div>
+
+                            <div class="cnv-piece piece-2" id="cnvPiece2" data-piece="2">
+                                <div class="piece-content">
+                                    <span class="piece-num">2</span>
+                                    <span class="piece-lock">🔒</span>
+                                    <span class="piece-title">Góc 2</span>
+                                </div>
+                            </div>
+
+                            <div class="cnv-piece piece-3" id="cnvPiece3" data-piece="3">
+                                <div class="piece-content">
+                                    <span class="piece-num">3</span>
+                                    <span class="piece-lock">🔒</span>
+                                    <span class="piece-title">Góc 3</span>
+                                </div>
+                            </div>
+
+                            <div class="cnv-piece piece-4" id="cnvPiece4" data-piece="4">
+                                <div class="piece-content">
+                                    <span class="piece-num">4</span>
+                                    <span class="piece-lock">🔒</span>
+                                    <span class="piece-title">Góc 4</span>
+                                </div>
+                            </div>
+
+                            <div class="cnv-piece piece-center" id="cnvPieceCenter" data-piece="center">
+                                <div class="piece-content center-content">
+                                    <span class="piece-star">★</span>
+                                    <span class="piece-num">TT</span>
+                                    <span class="piece-title">Trung Tâm</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cnv-caption-box hidden" id="cnvCaptionBox">
+                            <span class="caption-icon">📍</span>
+                            <span class="caption-text" id="cnvCaptionText"></span>
+                        </div>
+
+                        <div class="cnv-rules-banner">
+                            <div class="rule-chip"><span>🎯</span> Đúng hàng ngang: <strong>+10đ</strong> & mở góc ảnh</div>
+                            <div class="rule-chip"><span>⚡</span> Đoán đúng CNV: nhận <strong>60 → 20đ</strong> (giảm dần)</div>
+                            <div class="rule-chip danger"><span>⚠️</span> Đoán sai CNV: <strong>Bị loại ngay</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Rows Board & Question Input Panel -->
+                    <div class="cnv-interactive-panel">
+                        <!-- Crossword Rows List (Selectable) -->
+                        <div class="cnv-rows-card glass-card" id="cnvRowsCard">
+                            <div class="cnv-card-top">
+                                <h3>📋 4 Hàng Ngang & Ô Trung Tâm</h3>
+                                <p class="cnv-card-subtitle">Nhấp chọn một hàng ngang để bắt đầu suy nghĩ và trả lời (15 giây):</p>
+                            </div>
+                            <div class="cnv-rows-list" id="cnvRowsList">
+                                <!-- Populated dynamically via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Active Row Question Box (appears when answering a row) -->
+                        <div class="cnv-active-question-card glass-card hidden" id="cnvActiveCard">
+                            <div class="active-q-header">
+                                <div class="active-badges">
+                                    <span class="active-row-badge" id="cnvActiveBadge">HÀNG NGANG 1</span>
+                                    <span class="active-length-badge" id="cnvActiveLength">8 CHỮ CÁI</span>
+                                </div>
+                                <!-- 15s Countdown Timer -->
+                                <div class="cnv-row-timer" id="cnvRowTimer">
+                                    <svg class="cnv-timer-svg" viewBox="0 0 50 50">
+                                        <circle class="cnv-timer-track" cx="25" cy="25" r="21" />
+                                        <circle class="cnv-timer-progress" id="cnvRowTimerProgress" cx="25" cy="25" r="21" />
+                                    </svg>
+                                    <span class="cnv-timer-num" id="cnvRowTimerNum">15</span>
+                                </div>
+                            </div>
+
+                            <div class="active-q-body" id="cnvActiveQuestion">
+                                Đang nạp câu hỏi...
+                            </div>
+
+                            <!-- Answer Form -->
+                            <div class="active-q-form" id="cnvActiveForm">
+                                <div class="answer-input-group">
+                                    <input type="text" id="cnvRowInput" class="answer-input" placeholder="Nhập câu trả lời cho hàng ngang này..." autocomplete="off">
+                                    <button class="btn btn-submit btn-glow" id="cnvRowSubmitBtn" type="button">
+                                        <span>Trả lời</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="answer-shortcut">Nhấn <kbd>Enter</kbd> để trả lời • Thời gian suy nghĩ: <strong>15 giây</strong></div>
+                            </div>
+
+                            <!-- Row Feedback Result -->
+                            <div class="cnv-row-feedback hidden" id="cnvRowFeedback">
+                                <div class="feedback-status-line">
+                                    <span class="feedback-icon" id="cnvRowFbIcon">✅</span>
+                                    <span class="feedback-text" id="cnvRowFbText">Chính xác! (+10 điểm)</span>
+                                </div>
+                                <div class="feedback-ans" id="cnvRowFbAns">Đáp án: BIỂN ĐÔNG</div>
+                                <button class="btn btn-primary btn-glow" id="cnvRowContinueBtn" type="button">
+                                    Tiếp tục giải hàng ngang tiếp theo →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay hidden" id="loadingOverlay">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <div class="loader-text">AI đang tạo câu hỏi...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Screen -->
+        <section id="resultsScreen" class="screen">
+            <div class="results-container">
+                <div class="results-header">
+                    <div class="results-icon" id="resultsIcon">🎉</div>
+                    <h2 id="resultsTitle">Kết Quả Vòng Thi</h2>
+                </div>
+                <div class="results-score-circle">
+                    <svg viewBox="0 0 200 200">
+                        <circle class="results-track" cx="100" cy="100" r="85" />
+                        <circle class="results-progress" id="resultsProgress" cx="100" cy="100" r="85" />
+                    </svg>
+                    <div class="results-score-text">
+                        <span class="results-score-value" id="resultsScoreValue">0</span>
+                        <span class="results-score-label">điểm</span>
+                    </div>
+                </div>
+                <div class="results-details">
+                    <div class="results-detail-item">
+                        <span class="detail-label">Câu đúng</span>
+                        <span class="detail-value" id="resultsCorrect">0/0</span>
+                    </div>
+                    <div class="results-detail-item">
+                        <span class="detail-label">Tỷ lệ đúng</span>
+                        <span class="detail-value" id="resultsAccuracy">0%</span>
+                    </div>
+                    <div class="results-detail-item">
+                        <span class="detail-label">Thời gian TB</span>
+                        <span class="detail-value" id="resultsAvgTime">0s</span>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button class="btn btn-primary btn-glow" id="playAgainBtn">🔄 Chơi lại</button>
+                    <button class="btn btn-secondary" id="goHomeBtn">🏠 Về trang chủ</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal-overlay">
+            <div class="modal-content glass-card settings-modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Cài Đặt Hệ Thống</h2>
+                    <button class="btn-close" id="closeSettings">✕</button>
+                </div>
+
+                <!-- Settings Header -->
+                <div class="settings-modal-header-desc">
+                    <p class="settings-hint">⚙️ Quản lý trạng thái thi đấu, âm thanh và ngân hàng câu hỏi Đường Lên Đỉnh Olympia.</p>
+                </div>
+
+                <!-- Question Bank Non-Repeating Tracker -->
+                <div class="settings-section">
+                    <div class="settings-section-title">
+                        <span class="title-icon">📚</span>
+                        <div>
+                            <strong>Tiến Trình Ngân Hàng Câu Hỏi (Không Lặp Lại)</strong>
+                            <p class="settings-hint">Những câu đã hỏi sẽ không hỏi lại cho đến khi hết toàn bộ 120 câu mới xoay vòng lại.</p>
+                        </div>
+                    </div>
+                    <div class="bank-stats-row">
+                        <div class="bank-stat-chip">
+                            <span>📝 Đã hoàn thành:</span>
+                            <strong id="settingsAskedQCount">0 / 120 câu</strong>
+                        </div>
+                        <div class="bank-stat-chip">
+                            <span>🧩 Chướng ngại vật:</span>
+                            <strong id="settingsAskedCnvCount">0 / 10 bộ</strong>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="resetBankHistoryBtn" type="button" style="width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>🔄 Xoay vòng lại ngay (Đặt lại lịch sử câu hỏi)</span>
+                    </button>
+                </div>
+
+                <div class="settings-group">
+                    <label>Độ khó câu hỏi</label>
+                    <div class="difficulty-options">
+                        <button class="diff-btn active" data-diff="easy" id="diffEasy">Dễ</button>
+                        <button class="diff-btn" data-diff="medium" id="diffMedium">Trung bình</button>
+                        <button class="diff-btn" data-diff="hard" id="diffHard">Khó</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <label>Hiệu ứng âm thanh</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <label for="soundToggle" class="toggle-label"></label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <label>Quản lý điểm số</label>
+                    <button class="btn btn-secondary" id="settingsResetBtn" type="button" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>🔄 Đặt lại điểm số & kỷ lục</span>
+                    </button>
+                </div>
+
+                <button class="btn btn-primary btn-glow" id="saveSettings" style="width: 100%; margin-top: 10px;">💾 Lưu Cài Đặt</button>
+            </div>
+        </div>
+
+        <!-- Modal: Bấm Chuông Trả Lời Chướng Ngại Vật (VTV Format) -->
+        <div id="cnvBuzzerModal" class="modal-overlay">
+            <div class="modal-content glass-card cnv-buzzer-modal-content">
+                <div class="buzzer-modal-header">
+                    <div class="buzzer-glow-icon">🔔</div>
+                    <h2>BẠN ĐÃ BẤM CHUÔNG XIN TRẢ LỜI!</h2>
+                    <div class="buzzer-points-potential">
+                        Đúng nhận ngay: <span class="highlight" id="buzzerPotentialPointsText">+60 ĐIỂM</span>
+                    </div>
+                </div>
+
+                <div class="buzzer-warning-banner">
+                    ⚠️ <strong>LUẬT THI VTV OLYMPIA:</strong> Nếu trả lời <strong>SAI</strong>, bạn sẽ <strong>BỊ LOẠI</strong> khỏi phần thi Vượt chướng ngại vật ngay lập tức!
+                </div>
+
+                <div class="buzzer-timer-container">
+                    <div class="buzzer-timer-circle">
+                        <span id="buzzerTimerText">15</span>s
+                    </div>
+                    <span>Thời gian suy nghĩ & nhập từ khóa</span>
+                </div>
+
+                <div class="buzzer-input-container">
+                    <input type="text" id="cnvBuzzerInput" class="buzzer-big-input" placeholder="NHẬP TỪ KHÓA CHƯỚNG NGẠI VẬT..." autocomplete="off">
+                </div>
+
+                <div class="buzzer-actions">
+                    <button class="btn btn-warning btn-lg btn-glow" id="cnvConfirmBuzzerBtn" type="button">
+                        ⚡ Xác Nhận Trả Lời CNV
+                    </button>
+                    <button class="btn btn-secondary" id="cnvCancelBuzzerBtn" type="button">
+                        Quay lại (Hủy chuông)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Kết quả Chướng Ngại Vật (Victory hoặc Bị loại) -->
+        <div id="cnvOutcomeModal" class="modal-overlay">
+            <div class="modal-content glass-card cnv-outcome-content">
+                <div class="outcome-icon" id="cnvOutcomeIcon">🎉</div>
+                <h2 id="cnvOutcomeTitle">CHÍNH XÁC! BẠN ĐÃ VƯỢT CHƯỚNG NGẠI VẬT!</h2>
+                <div class="outcome-points" id="cnvOutcomePoints">+60 ĐIỂM</div>
+                <div class="outcome-keyword-display">
+                    <span class="outcome-label">TỪ KHÓA CHƯỚNG NGẠI VẬT:</span>
+                    <div class="outcome-keyword-tag" id="cnvOutcomeKeyword">HOÀNG SA</div>
+                </div>
+                <div class="outcome-explanation" id="cnvOutcomeExplanation">
+                    <!-- Detailed explanation of rows and keyword -->
+                </div>
+                <button class="btn btn-primary btn-glow btn-lg" id="cnvOutcomeNextBtn" type="button">
+                    Xem Tổng Kết Vòng Thi →
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal: Reset Điểm Số -->
+        <div id="resetModal" class="modal-overlay">
+            <div class="modal-content glass-card reset-modal-content">
+                <div class="modal-header">
+                    <h2>🔄 Đặt Lại Điểm Số</h2>
+                    <button class="btn-close" id="closeResetModal" type="button">✕</button>
+                </div>
+                <p class="reset-desc">Bạn muốn đặt lại điểm số và dữ liệu luyện tập như thế nào?</p>
+                <div class="reset-buttons-grid">
+                    <button class="reset-option-btn reset-score-only" id="resetScoreOnlyBtn" type="button">
+                        <div class="btn-icon-large">🎯</div>
+                        <div class="btn-text-content">
+                            <strong>Đặt lại Tổng Điểm về 0</strong>
+                            <span>Chỉ đặt lại điểm số hiện tại về 0, giữ nguyên lịch sử câu hỏi và kỷ lục chuỗi đúng.</span>
+                        </div>
+                    </button>
+                    <button class="reset-option-btn reset-all-stats" id="resetAllStatsBtn" type="button">
+                        <div class="btn-icon-large">💥</div>
+                        <div class="btn-text-content">
+                            <strong>Đặt lại Toàn Bộ Dữ Liệu</strong>
+                            <span>Xóa tất cả: Tổng điểm, chuỗi đúng cao nhất, số câu đã làm và thống kê tỷ lệ.</span>
+                        </div>
+                    </button>
+                </div>
+                <div class="reset-modal-actions">
+                    <button class="btn btn-secondary" id="cancelResetModalBtn" type="button">Hủy bỏ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
